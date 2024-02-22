@@ -3,8 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using System.Threading;
+using UnityEngine;
+using System.Collections.Generic;
+
+
+
+
+
+    public class PatrolAI : MonoBehaviour
+    public List <Transform> patrolPoints; // Lista de puntos de destino
+    private int currentPatrolIndex = 0; // Índice del punto de destino actual
+    
+
+    public float moveSpeed = 5f; // Velocidad de movimiento de la IA
+    public float waitTime = 5f; // Tiempo de espera en segundos
+    
+    public float chaseRange = 10f; // Rango de detección del jugador
+    public float attackRange = 2f; // Rango de ataque
+
+    private enum AIState { Patrolling, Waiting, Chasing, Attacking }; // Enumeración para los estados de la IA
+    private AIState currentState = AIState.Patrolling; // Estado actual de la IA
+    private float waitTimer = 0f; // Temporizador de espera
+
+    private Transform player; // Referencia al jugador
 
 public class IAenemigo : MonoBehaviour
+
 
 {
     enum State
@@ -46,6 +70,29 @@ public class IAenemigo : MonoBehaviour
     void Start()
     {
         currentState = State.Patrolling;
+        {
+        player = GameObject.FindGameObjectWithTag("Player").transform; // Buscar al jugador por la etiqueta "Player"
+    }
+
+    void Update()
+    {
+        switch (currentState)
+        {
+            case AIState.Patrolling:
+                Patrol();
+                break;
+            case AIState.Waiting:
+                Wait();
+                break;
+            case AIState.Chasing:
+                Chase();
+                break;
+            case AIState.Attacking:
+                Attack();
+                break;
+        }
+    }
+
     }
 
     // Update is called once per frame
@@ -79,7 +126,64 @@ public class IAenemigo : MonoBehaviour
         {
             SetRandomPoint();
         }
+
+        {
+        if (player != null && Vector3.Distance(transform.position, player.position) < chaseRange)
+        {
+            currentState = AIState.Chasing; // Cambiar al estado de persecución si el jugador está dentro del rango de detección
+            return;
+        }
+
+        if (patrolPoints.Count > 0)
+        {
+            Transform currentPatrolPoint = patrolPoints[currentPatrolIndex];
+            transform.position = Vector3.MoveTowards(transform.position, currentPatrolPoint.position, moveSpeed * Time.deltaTime);
+
+            if (Vector3.Distance(transform.position, currentPatrolPoint.position) < 0.1f)
+            {
+                currentState = AIState.Waiting;
+                waitTimer = waitTime;
+            }
+        }
     }
+
+    }
+
+    void Wait()
+    {
+        waitTimer -= Time.deltaTime;
+        if (waitTimer <= 0f)
+        {
+            currentPatrolIndex++;
+            if (currentPatrolIndex >= patrolPoints.Count)
+            {
+                currentPatrolIndex = 0;
+            }
+            currentState = AIState.Patrolling;
+        }
+    }
+ void Chase()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime); // Moverse hacia la posición del jugador
+
+        if (Vector3.Distance(transform.position, player.position) > chaseRange)
+        {
+            currentState = AIState.Patrolling; // Volver a patrullar si el jugador está fuera del rango de detección
+        }
+        else if (Vector3.Distance(transform.position, player.position) < attackRange)
+        {
+            currentState = AIState.Attacking; // Cambiar al estado de ataque si el jugador está dentro del rango de ataque
+        }
+    }
+
+void Attack()
+    {
+        // Simular el ataque (debug)
+        Debug.Log("¡Ataque!");
+
+        currentState = AIState.Chasing; // Volver al estado de persecución después del ataque
+    }
+
 
     void Search()
     {
