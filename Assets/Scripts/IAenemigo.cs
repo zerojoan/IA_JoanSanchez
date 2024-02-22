@@ -91,7 +91,7 @@ public class IAEnemigo : MonoBehaviour
         if(enemyAgent.remainingDistance<0.5f)
         {   
             currentState = State.Waiting;
-            //SetRandomPoint();
+            
         }
     }
 
@@ -171,28 +171,16 @@ public class IAEnemigo : MonoBehaviour
 
     void Attack()
     {
-       //enemyAgent.destination = playerTransform.position;
+      
         Debug.Log("Attack");
         currentState = State.Chasing;
     }
 
-    /* void SetRandomPoint()
-    {
-        float randomX = Random.Range(-patrolAreaSize.x / 2, patrolAreaSize.x / 2);
-        float randomZ = Random.Range(-patrolAreaSize.x / 2, patrolAreaSize.x / 2);
-        Vector3 randomPoint = new Vector3(randomX, 0f, randomZ) + patrolAreaCenter.position;
-
-        enemyAgent.destination = randomPoint;
-    }*/
+    
 
      bool OnRangeAttack()
     {
-        /*if(Vector3.Distance(transform.position, playerTransform.position)<= visionRange)
-        {
-            return true;
-        }
-
-        return false;*/
+       
 
         Vector3 directionToPlayer = playerTransform.position - transform.position;
         float distanceToPlayer = directionToPlayer.magnitude;
@@ -200,7 +188,7 @@ public class IAEnemigo : MonoBehaviour
 
         if(distanceToPlayer <= visionRange && angleToPlayer< visionAngle* 0.3f)
         {
-            //return true;
+           
 
             if(playerTransform.position == lastTargetPosition)
             {
@@ -225,12 +213,7 @@ public class IAEnemigo : MonoBehaviour
 
     bool OnRange()
     {
-        /*if(Vector3.Distance(transform.position, playerTransform.position)<= visionRange)
-        {
-            return true;
-        }
-
-        return false;*/
+       
 
         Vector3 directionToPlayer = playerTransform.position - transform.position;
         float distanceToPlayer = directionToPlayer.magnitude;
@@ -238,7 +221,7 @@ public class IAEnemigo : MonoBehaviour
 
         if(distanceToPlayer <= visionRange && angleToPlayer< visionAngle* 0.5f)
         {
-            //return true;
+           
 
             if(playerTransform.position == lastTargetPosition)
             {
